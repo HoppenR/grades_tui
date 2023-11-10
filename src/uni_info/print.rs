@@ -177,7 +177,14 @@ impl Display for UniInfo {
             write_progress(f, &semester_courses, 1)?;
             all_courses.append(&mut semester_courses);
         }
-        write_progress(f, &all_courses, 0)?;
+        write_entry(f, &"Total:", false, 0)?;
+        write_progress(f, &all_courses, 1)?;
+        let oblig_courses: Vec<&Course> = all_courses
+            .into_iter()
+            .filter(|item| item.obligatory)
+            .collect();
+        write_entry(f, &"Obligatory:", false, 0)?;
+        write_progress(f, &oblig_courses, 1)?;
         write!(f, "{ERASE_TO_DISP_END}")
     }
 }
@@ -205,12 +212,20 @@ impl Display for Course {
             },
             Grade::Ongoing => Ok((BLU, ELLIPSIS)),
         }?;
+        let post: String = if self.sum_credits() > 0.0 {
+            format!(
+                "{credits:.1} ECTS ({oblig})",
+                credits = self.max_credits(),
+                oblig = if self.obligatory { 'O' } else { 'V' }
+            )
+        } else {
+            "~".to_string()
+        };
         write!(
             f,
-            "[{color}{symbol}{RST}] {UDL}{code}{RST} {BLD}{BLU}{name}{RST} {credits:.1} ECTS",
+            "[{color}{symbol}{RST}] {UDL}{code}{RST} {BLD}{BLU}{name}{RST} {post}",
             code = self.code,
             name = self.name,
-            credits = self.max_credits(),
         )
     }
 }

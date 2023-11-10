@@ -86,7 +86,7 @@ impl<'a> UI<'a> {
                 self.offset = self.uni.cursor_offset();
             }
             if let Ok(mut height) = self.term.height() {
-                height = height.saturating_sub(1); // total statistics take up one row
+                height = height.saturating_sub(1); // Disclaimer takes up one row
                 height = height.saturating_sub(1); // the keybinds take up one row
                 let new_min_offset = self.uni.cursor_offset().saturating_sub(height);
                 self.offset = usize::max(self.offset, new_min_offset);
@@ -138,8 +138,10 @@ impl<'a> UI<'a> {
                 let grade_opt: Option<Grade> = self.construct_grade()?;
                 self.prompt_line("Enter name: ")?;
                 let name: String = self.read_line()?;
+                self.prompt_line("Is obligatory? [y]es [n]o")?;
+                let obligatory = self.read_confirm()?;
                 if let Some(grade) = grade_opt {
-                    self.uni.add_course(code, grade, name);
+                    self.uni.add_course(code, grade, name, obligatory);
                 }
             }
             Level::Course => {
@@ -217,7 +219,7 @@ impl<'a> UI<'a> {
         match &self.uni.cursor_level() {
             Level::Semester | Level::Period => {}
             Level::Course => {
-                self.prompt_line("Edit [g]rade [c]ode [n]ame")?;
+                self.prompt_line("Edit [g]rade [c]ode [n]ame [o]bligatory")?;
                 self.key.read()?;
                 match &self.key.as_printable_ascii() {
                     Some('g') => {
@@ -234,6 +236,9 @@ impl<'a> UI<'a> {
                         self.prompt_line("Enter name: ")?;
                         let name: String = self.read_line()?;
                         self.uni.set_course_name(name);
+                    }
+                    Some('o') => {
+                        self.uni.toggle_obligatory_course();
                     }
                     _ => {}
                 }

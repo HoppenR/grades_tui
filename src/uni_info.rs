@@ -52,6 +52,7 @@ struct Course {
     grade: Grade,
     moments: Moments,
     name: String,
+    obligatory: bool,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(untagged)]
@@ -148,13 +149,20 @@ impl UniInfo {
         self.sel_menu_mut().push([Vec::new(), Vec::new()]);
     }
 
-    pub(super) fn add_course(&mut self, code: String, grade: Grade, name: String) {
+    pub(super) fn add_course(
+        &mut self,
+        code: String,
+        grade: Grade,
+        name: String,
+        obligatory: bool,
+    ) {
         if let Some(period) = self.sel_period_mut() {
             period.push(Course {
                 code,
                 grade,
                 moments: Vec::new(),
                 name,
+                obligatory,
             });
         }
     }
@@ -266,6 +274,12 @@ impl UniInfo {
     pub(super) fn set_course_name(&mut self, new_name: String) {
         if let Some(course) = self.sel_course_mut() {
             course.name = new_name;
+        }
+    }
+
+    pub(super) fn toggle_obligatory_course(&mut self) {
+        if let Some(course) = self.sel_course_mut() {
+            course.obligatory = !course.obligatory;
         }
     }
 

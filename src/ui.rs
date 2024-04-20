@@ -69,7 +69,7 @@ impl<'a> UI<'a> {
 
     /// Resets the terminal to the state prior to the `UI` instance creation.
     fn finish(&mut self) -> io::Result<()> {
-        self.term.enable_line_wrap()?;
+        self.term.enable_line_wrap()?; // TODO: Is needed? self.finish does this?
         self.term.show_cursor()?;
         self.term.clear_buffer()?;
         self.term.reset_cursor_pos()?;
@@ -197,13 +197,13 @@ impl<'a> UI<'a> {
     /// Prompt the user for information regarding the creation of a new `Grade`
     /// object. Silently returns `Ok` on bad user input.
     fn construct_grade(&mut self) -> io::Result<Option<Grade>> {
-        self.prompt_line("Enter type [3..5] [A..E] [p]ass [f]ail [o]ngoing")?;
+        self.prompt_line("Enter type [0 | 3..5] [A..E] [p]ass [f]ail [o]ngoing")?;
         self.key.read()?;
         match &self.key.as_printable_ascii() {
             Some('A'..='E') => Ok(Some(Grade::Traditional(self.key.as_char_unchecked()))),
-            Some('3'..='5') => {
+            Some('0' | '3'..='5') => {
                 let grade: u8 = self.key.as_char_unchecked() as u8 - b'0';
-                Ok(Some(Grade::Grade(grade)))
+                Ok(Some(Grade::Number(grade)))
             }
             Some('p') => Ok(Some(Grade::Completed(true))),
             Some('f') => Ok(Some(Grade::Completed(false))),

@@ -102,12 +102,11 @@ impl Key<'_> {
     /// Returns an optional character if the last keypress is representable
     /// as a printable utf8-character.
     pub(super) fn as_printable_utf8(&self) -> Option<char> {
-        str::from_utf8(self.data.get(..self.rd).unwrap_or(&[])).map_or(None, |data_str| {
-            match data_str.chars().next() {
-                Some('\u{00}'..='\u{1f}' | '\u{7f}'..='\u{9f}') => None,
-                opt_ch => opt_ch,
-            }
-        })
+        str::from_utf8(self.data.get(..self.rd)?)
+            .ok()?
+            .chars()
+            .next()
+            .filter(|&x| !matches!(x, '\u{00}'..='\u{1f}' | '\u{7f}'..='\u{9f}'))
     }
 
     /// Reinterprets the first byte of the keypress as a char.

@@ -55,15 +55,17 @@ pub(crate) mod attributes {
     /// Set attribute `strikethrough`.
     pub(crate) const STK: &str = "\x1b[9m";
     /// Set color `red`.
-    pub(crate) const RED: &str = "\x1b[91m";
+    pub(crate) const RED: &str = "\x1b[31m";
     /// Set color `green`.
-    pub(crate) const GRN: &str = "\x1b[92m";
+    pub(crate) const GRN: &str = "\x1b[32m";
     /// Set color `yellow`.
-    pub(crate) const YLW: &str = "\x1b[93m";
+    pub(crate) const YLW: &str = "\x1b[33m";
     /// Set color `blue`.
-    pub(crate) const BLU: &str = "\x1b[94m";
+    pub(crate) const BLU: &str = "\x1b[34m";
+    /// Set color `magenta`.
+    pub(crate) const MGN: &str = "\x1b[35m";
     /// Set color `cyan`.
-    pub(crate) const CYN: &str = "\x1b[96m";
+    pub(crate) const CYN: &str = "\x1b[36m";
 }
 
 /// Clear the terminal contents from the terminal cursor to the end of the line.

@@ -23,7 +23,7 @@
 //!
 //! For invalid data it will simply tell the formatter to stop and return an uncategorized error.
 
-use crate::ui::term::attributes::{BLD, BLU, CUR, CYN, GRN, RED, RST, STK, UDL, YLW};
+use crate::ui::term::attributes::{BLD, BLU, CUR, CYN, GRN, MGN, RED, RST, STK, UDL, YLW};
 use crate::ui::term::{ERASE_TO_DISP_END, ERASE_TO_LINE_END};
 use crate::uni_info::cursor::Cursor;
 use crate::uni_info::{Course, Grade, Level, Moment, UniInfo};
@@ -89,7 +89,8 @@ fn write_progress(f: &mut Formatter<'_>, courses: &Vec<&Course>, indents: usize)
         accrued_creds += course.sum_credits();
         match course.grade {
             Grade::Completed(_) | Grade::Ongoing => {}
-            Grade::Grade(grade) => match grade {
+            Grade::Number(grade) => match grade {
+                0 => { /* ignored */ }
                 (3..=5) => {
                     grades.push(f32::from(grade));
                     total_grade_items += 1.0;
@@ -166,7 +167,7 @@ impl Display for UniInfo {
                                     level: Level::Task,
                                     ..cursor
                                 };
-                                write_entry(f, &task, self.cursor == cursor, 5)?;
+                                write_entry(f, &task, self.cursor == cursor, 4)?;
                             }
                         }
                     }
@@ -199,7 +200,8 @@ impl Display for Course {
                     Ok((RED, CROSS))
                 }
             }
-            Grade::Grade(grade) => match grade {
+            Grade::Number(grade) => match grade {
+                0 => Ok((MGN, '󰴼')),
                 (3..=5) => {
                     let grade_ch: char = (grade + b'0') as char;
                     Ok((GRN, grade_ch))
@@ -212,20 +214,13 @@ impl Display for Course {
             },
             Grade::Ongoing => Ok((BLU, ELLIPSIS)),
         }?;
-        let post: String = if self.sum_credits() > 0.0 {
-            format!(
-                "{credits:.1} ECTS ({oblig})",
-                credits = self.max_credits(),
-                oblig = if self.obligatory { 'O' } else { 'V' }
-            )
-        } else {
-            "~".to_string()
-        };
         write!(
             f,
-            "[{color}{symbol}{RST}] {UDL}{code}{RST} {BLD}{BLU}{name}{RST} {post}",
+            "[{color}{symbol}{RST}] {UDL}{code}{RST} {BLD}{BLU}{name}{RST} {credits:.1} ECTS ({oblig})",
             code = self.code,
             name = self.name,
+            credits = self.max_credits(),
+            oblig = if self.obligatory { 'O' } else { 'V' },
         )
     }
 }
@@ -240,7 +235,7 @@ impl Display for Moment {
                     Ok((RED, 'U'))
                 }
             }
-            Grade::Grade(grade) => match grade {
+            Grade::Number(grade) => match grade {
                 (3..=5) => {
                     let grade_ch: char = (grade + b'0') as char;
                     Ok((GRN, grade_ch))

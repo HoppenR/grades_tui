@@ -59,7 +59,7 @@ struct Course {
 pub(super) enum Grade {
     Traditional(char),
     Completed(bool),
-    Grade(u8),
+    Number(u8),
     Ongoing,
 }
 type Moments = Vec<Moment>;
@@ -399,7 +399,7 @@ impl Course {
         match self.grade {
             Grade::Ongoing => true,
             Grade::Completed(passed) => !passed,
-            Grade::Grade(_) | Grade::Traditional(_) => false,
+            Grade::Number(_) | Grade::Traditional(_) => false,
         }
     }
 }

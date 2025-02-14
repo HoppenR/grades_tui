@@ -47,6 +47,7 @@ fn main() -> io::Result<()> {
     let mut file: fs::File = fs::File::options()
         .read(true)
         .write(true)
+        .truncate(false)
         .create(true)
         .open(file_path)?;
 

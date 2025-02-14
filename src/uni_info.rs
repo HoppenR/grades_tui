@@ -53,6 +53,8 @@ struct Course {
     moments: Moments,
     name: String,
     obligatory: bool,
+    #[serde(skip)]
+    expanded: Option<bool>,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(untagged)]
@@ -110,7 +112,7 @@ impl UniInfo {
     }
 
     /// Returns the row of the cursor on the screen
-    pub(super) fn cursor_offset(&mut self) -> usize {
+    pub(super) fn cursor_offset(&self) -> usize {
         let mut offset: usize = 0;
         offset += 1; // Instructions take up one line
         find_cursor_offset(
@@ -163,6 +165,7 @@ impl UniInfo {
                 moments: Vec::new(),
                 name,
                 obligatory,
+                expanded: None,
             });
         }
     }
@@ -297,6 +300,16 @@ impl UniInfo {
         }
     }
 
+    pub(super) fn expand_course(&mut self) {
+        if let Some(course) = self.sel_course_mut() {
+            if let Some(expanded) = course.expanded {
+                course.expanded = Some(!expanded);
+            } else {
+                course.expanded = Some(!course.should_print_moments());
+            }
+        }
+    }
+
     fn sel_menu_entries(&self) -> usize {
         self.sel_menu().len()
     }
@@ -396,6 +409,9 @@ impl Course {
 
     /// Returns whether the child moments should be visible on screen.
     const fn should_print_moments(&self) -> bool {
+        if let Some(expanded) = self.expanded {
+            return expanded;
+        }
         match self.grade {
             Grade::Ongoing => true,
             Grade::Completed(passed) => !passed,

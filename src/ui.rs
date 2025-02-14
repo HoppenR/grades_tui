@@ -98,10 +98,7 @@ impl<'a> UI<'a> {
             self.term.flush()?;
             self.key.read()?;
             match &self.key.as_printable_ascii() {
-                Some(' ') => {
-                    self.edit_entry()?;
-                    self.uni.cursor_down();
-                }
+                Some(' ') => self.uni.expand_course(),
                 Some('a') => self.add_entry()?,
                 Some('d') => self.delete_entry()?,
                 Some('e') => self.edit_entry()?,
@@ -249,7 +246,12 @@ impl<'a> UI<'a> {
                 match &self.key.as_printable_ascii() {
                     Some('g') => {
                         if let Some(grade) = self.construct_grade()? {
-                            self.uni.set_moment_grade(grade);
+                            // Moments cannot have Grade::Number(0)
+                            // Since Grade::Number(0) is meant to mark
+                            // that something continues into the next period
+                            if !matches!(grade, Grade::Number(0)) {
+                                self.uni.set_moment_grade(grade);
+                            }
                         }
                     }
                     Some('c') => {

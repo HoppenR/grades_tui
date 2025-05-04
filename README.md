@@ -7,6 +7,8 @@ and accomplishments.
 The tool utilizes a tree-like structure, which can be navigated and manipulated
 using a cursor.
 
+![](demo.gif)
+
 ## Features
 
 - Courses, semesters, moments, and tasks can be interactively added with their relevant information.

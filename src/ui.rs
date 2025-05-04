@@ -314,7 +314,7 @@ impl<'a> UI<'a> {
                 "S> [a]dd [d]elete        {hjkl | \u{2190}\u{2193}\u{2191}\u{2192}} [q]uit",
             ),
             Level::Period => self.prompt_line(
-                "P>                       {hjkl | \u{2190}\u{2193}\u{2191}\u{2192}} [q]uit",
+                "P> [a]dd                 {hjkl | \u{2190}\u{2193}\u{2191}\u{2192}} [q]uit",
             ),
             Level::Course => self.prompt_line(
                 "C> [a]dd [d]elete [e]dit {hjkl | \u{2190}\u{2193}\u{2191}\u{2192}} [q]uit",

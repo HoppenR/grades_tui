@@ -414,8 +414,7 @@ impl Course {
         }
         match self.grade {
             Grade::Ongoing => true,
-            Grade::Completed(passed) => !passed,
-            Grade::Number(_) | Grade::Traditional(_) => false,
+            Grade::Completed(_) | Grade::Number(_) | Grade::Traditional(_) => false,
         }
     }
 }
